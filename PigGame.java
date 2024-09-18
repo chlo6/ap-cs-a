@@ -7,6 +7,7 @@
  *	@since	9.13.2024
  */
  
+ // java -cp PigGame.jar PigGame
  // find losing message, roll 1 message
 import java.util.Scanner;
 public class PigGame {
@@ -46,17 +47,33 @@ public class PigGame {
 	 */
 	public void runner() {
 		printIntroduction();
-		while (userTurnScore + userTotalScore < 100 && compTurnScore + compTotalScore < 100) {
-			if (player.equals("user")) System.out.println("* * * * USER Turn * * * *\n");
-			else System.out.println("* * * * COMPUTER's Turn * * * *\n");
-			turn();
+		
+		System.out.print("Play game or Statistics (p or s) -> ");
+		String option = scanner.next();
+		System.out.println();
+		
+		if (option.equals("p")) {
+			while (userTurnScore + userTotalScore < 100 && compTurnScore + compTotalScore < 100) {
+				if (player.equals("user")) System.out.println("* * * * USER Turn * * * *\n");
+				else System.out.println("* * * * COMPUTER's Turn * * * *\n");
+				turn();
+			}
+			
+			if (userTotalScore > 100) {
+				System.out.println("Congratulations!!! YOU WON!!!!\nThanks for playing the Pig Game!!!");
+			} else { // FIX???
+				System.out.println("Too bad. COMPUTER WON.\n\nThanks for playing the Pig Game!!!");
+			}
+		} else {
+			System.out.println("Run statistical analysis - \"Hold at 20\"\n");
+			System.out.print("Number of turns (1000 - 10000000) -> ");
+			int turns = scanner.nextInt();
+			scanner.next();
+			System.out.println("\nScore\tEstimated Probability");
+			
+			
 		}
 		
-		if (userTotalScore > 100) {
-			System.out.println("Congratulations!!! YOU WON!!!!\nThanks for playing the Pig Game!!!");
-		} else { // FIX???
-			System.out.println("COMPUTER won!\nThanks for playing the Pig Game!!!");
-		}
 	}
 	
 	/**	
@@ -105,6 +122,8 @@ public class PigGame {
 				userTurnScore += numRolled;
 				
 				if (numRolled == 1) { /** if user rolls a 1 */
+					System.out.println("You LOSE your turn.");
+					System.out.println("Your total score: " + userTotalScore + "\n");
 					player = "computer";
 					userTurnScore = 0;
 				} 
@@ -126,11 +145,13 @@ public class PigGame {
 			System.out.println("\nComputer will ROLL ");
 			int numRolled = dice.roll();
 			dice.printDice();
-			computerTurnScore += numRolled;
+			compTurnScore += numRolled;
 			
 			if (numRolled == 1) { /** if computer rolls a 1 */
+				System.out.println("Computer loses turn.");
+				System.out.println("Computer total score: " + compTotalScore + "\n");
 				player = "user";
-				computerTurnScore = 0;
+				compTurnScore = 0;
 			} /** if computer holds */
 			else if (compTurnScore >= 20) System.out.println("Computer will HOLD");
 			else turn(); /** computer's turn again */
