@@ -8,19 +8,26 @@
  */
  
  // java -cp PigGame.jar PigGame
+ // switch to file utils
  // find losing message, roll 1 message
+ 
 import java.util.Scanner;
+
 public class PigGame {
 	/** Runs the pig game */
 	
 	/** 
 	 * Declaring the variables 
 	 */
-	private String	player = "user";
+	private	String	player = "user";
 	private int		userTurnScore, userTotalScore; 
 	private int 	compTurnScore, compTotalScore;
 	private Scanner scanner;
 	private Dice	dice;
+	private final 	int WIN_SCORE = 100;
+	private final 	int TURN_END_SCORE = 20;
+	private final 	int DISTR_SIZE = 26;
+	private final 	int LOSE_TURN_SCORE = 1;
 	
 	/** 
 	 * Constructor for initializing variables 
@@ -30,6 +37,7 @@ public class PigGame {
 		userTotalScore = 0;
 		compTurnScore = 0;
 		compTotalScore = 0;
+		// use prompt class FIX
 		scanner = new Scanner(System.in);
 		dice = new Dice();
 	}
@@ -53,25 +61,22 @@ public class PigGame {
 		System.out.println();
 		
 		if (option.equals("p")) {
-			while (userTurnScore + userTotalScore < 100 && compTurnScore + compTotalScore < 100) {
+			while (userTurnScore + userTotalScore < WIN_SCORE && compTurnScore + compTotalScore < WIN_SCORE) {
 				if (player.equals("user")) System.out.println("* * * * USER Turn * * * *\n");
-				else System.out.println("* * * * COMPUTER's Turn * * * *\n");
+				else {
+					System.out.println("* * * * COMPUTER's Turn * * * *\n");
+					scanner.next();
+				}
 				turn();
 			}
 			
-			if (userTotalScore > 100) {
+			if (userTotalScore > WIN_SCORE) {
 				System.out.println("Congratulations!!! YOU WON!!!!\nThanks for playing the Pig Game!!!");
-			} else { // FIX???
+			} else { 
 				System.out.println("Too bad. COMPUTER WON.\n\nThanks for playing the Pig Game!!!");
 			}
 		} else {
-			System.out.println("Run statistical analysis - \"Hold at 20\"\n");
-			System.out.print("Number of turns (1000 - 10000000) -> ");
-			int turns = scanner.nextInt();
-			scanner.next();
-			System.out.println("\nScore\tEstimated Probability");
-			
-			
+			findProbability();
 		}
 		
 	}
@@ -121,14 +126,17 @@ public class PigGame {
 				
 				userTurnScore += numRolled;
 				
-				if (numRolled == 1) { /** if user rolls a 1 */
+				if (numRolled == LOSE_TURN_SCORE) { /** if user rolls a 1 */
 					System.out.println("You LOSE your turn.");
 					System.out.println("Your total score: " + userTotalScore + "\n");
 					player = "computer";
 					userTurnScore = 0;
 				} 
 				else turn(); /** user's turn again */
-			} else { /** if user holds */
+				
+			} 
+			
+			else { /** if user holds */
 				System.out.println("\nYour total score:\t" + userTotalScore);
 				userTotalScore += userTurnScore;
 				player = "computer";
@@ -153,9 +161,38 @@ public class PigGame {
 				player = "user";
 				compTurnScore = 0;
 			} /** if computer holds */
-			else if (compTurnScore >= 20) System.out.println("Computer will HOLD");
+			else if (compTurnScore >= TURN_END_SCORE) System.out.println("Computer will HOLD");
 			else turn(); /** computer's turn again */
 		}
 		
 	}	
+	
+	/**
+	 * Plays the statistical game
+	 */
+	public void findProbability() {
+		System.out.println("Run statistical analysis - \"Hold at 20\"\n");
+		System.out.print("Number of turns (1000 - 10000000) -> ");
+		int turns = scanner.nextInt();
+		System.out.println("\nScore\tEstimated Probability");
+
+		float [] distr = new float [DISTR_SIZE];
+			
+		for (int i = 0; i < turns; i++) {
+			int total = 0;
+			int numRolled = 0;
+			while (numRolled != LOSE_TURN_SCORE && total < TURN_END_SCORE) {
+				numRolled = dice.roll();
+				total += numRolled; 				
+			}
+			if (numRolled == 1) total = 0;
+			distr[total] ++;
+		}
+		
+		for (int i = 0; i < DISTR_SIZE; i++) distr[i] = distr[i]/turns;
+		System.out.printf("0\t%.4f\n",distr[0]);
+		for (int i = 20; i < DISTR_SIZE; i++) {
+			System.out.printf("%d\t%.4f\n", i, distr[i]);
+		}
+	}
 }
