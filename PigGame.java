@@ -1,49 +1,60 @@
 /**
  *	The game of Pig.
- *	Roll the dice until you choose to store your current rolled total or until you get a 1, which sets your current rolled total to 0.
- *  Playing against computer which always holds when it gets 20 or more
  * 
+ * 	Play game: User vs Computer. Roll the dice until you roll a 1 or 
+ * 	choose to store your current round's rolled total, which will be 
+ *  	added towards your total game score. If you roll a 1, your current 
+ *  	turn's total becomes 0 and you lose your turn. Then, the computer
+ *  	plays until it rolls a 1 or holds 20 or more in that turn. To win,
+ *  	reach 100 total points before the computer does.
+ * 
+ *  	Statistics: simulates and records the probability of ending
+ *  	each turn with a score of 0, 20, 21, 22, 23, 24, or 25. 
+ * 
+ *  	To run, cd into the directory with PigGame.java, Dice.java, and
+ * 	Prompt.java, then type in your terminal "javac -source 1.8 -target 
+ *  	1.8 PigGame.java" then "java PigGame" and it should run
+
  *	@author	Chloe He
  *	@since	9.13.2024
  */
  
- // java -cp PigGame.jar PigGame
- // switch to file utils
- // find losing message, roll 1 message
- 
 import java.util.Scanner;
 
 public class PigGame {
-	/** Runs the pig game */
 	
 	/** 
 	 * Declaring the variables 
-	 */
-	private	String	player = "user";
-	private int		userTurnScore, userTotalScore; 
-	private int 	compTurnScore, compTotalScore;
-	private Scanner scanner;
-	private Dice	dice;
-	private final 	int WIN_SCORE = 100;
-	private final 	int TURN_END_SCORE = 20;
-	private final 	int DISTR_SIZE = 26;
-	private final 	int LOSE_TURN_SCORE = 1;
-	
+	 */	 
+	private	String	player = "user";	 // whose turn it is
+	private int	userTurnScore;		 // user's current turn score
+	private	int 	userTotalScore;  	 // user's current total score
+	private int 	compTurnScore;		 // computer's current turn score
+	private int 	compTotalScore;  	 // computer's current total score
+	private final 	int WIN_SCORE;	 	 // score needed to win
+	private final 	int TURN_END_SCORE;  	 // score needed for computer to hold turn
+	private final 	int DISTR_SIZE;	 	 // max turn score for probability distribution array
+	private final 	int LOSE_TURN_SCORE; 	 // dice roll that makes you lose your turn
+	private Dice	dice;			 // dice object - used for rolling & printing dice
+
 	/** 
-	 * Constructor for initializing variables 
+	 * This constructor initializes the field variables and objects
 	 */
 	public PigGame() {
 		userTurnScore = 0;
 		userTotalScore = 0;
 		compTurnScore = 0;
 		compTotalScore = 0;
-		// use prompt class FIX
-		scanner = new Scanner(System.in);
+		WIN_SCORE = 100;
+		TURN_END_SCORE = 20;
+		DISTR_SIZE = 26;
+		LOSE_TURN_SCORE = 1;
 		dice = new Dice();
 	}
 	
 	/**
-	 * Main class, runs the runner method 
+	 * This is the main method, and runs the runner method which 
+	 * runs each turn or finds the statistics
 	 */
 	public static void main (String [] args) {
 		PigGame pg = new PigGame();
@@ -51,38 +62,55 @@ public class PigGame {
 	}
 	
 	/** 
-	 * Starts every user/computer switch, checks if game ended 
+	 * If playing the game, this method starts every turn resets the
+	 * turn score after each turn. It also checks if the game has ended.  
+	 * If finding statistics, it runs the method that simulates and
+	 * records the statistics. 
 	 */
 	public void runner() {
 		printIntroduction();
 		
-		System.out.print("Play game or Statistics (p or s) -> ");
-		String option = scanner.next();
+		String option = Prompt.getString("Play game or Statistics (p or s) ");
 		System.out.println();
 		
-		if (option.equals("p")) {
-			while (userTurnScore + userTotalScore < WIN_SCORE && compTurnScore + compTotalScore < WIN_SCORE) {
-				if (player.equals("user")) System.out.println("* * * * USER Turn * * * *\n");
+		// if the user wants to play
+		if (option.equals("p")) { 
+			// while the game isn't over
+			while (userTurnScore + userTotalScore < WIN_SCORE && 
+				   compTurnScore + compTotalScore < WIN_SCORE) {
+				// if user's turn
+				if (player.equals("user")) {
+					System.out.println("* * * * USER Turn * * * *\n");
+					turn();
+					userTurnScore = 0;
+				}
+				// if computer's turn
 				else {
 					System.out.println("* * * * COMPUTER's Turn * * * *\n");
-					scanner.next();
+					turn();
+					compTurnScore = 0;
 				}
-				turn();
 			}
 			
-			if (userTotalScore > WIN_SCORE) {
-				System.out.println("Congratulations!!! YOU WON!!!!\nThanks for playing the Pig Game!!!");
+			// if someone won
+			if (userTotalScore + userTurnScore > WIN_SCORE) {
+				System.out.println("Congratulations!!! YOU WON!!!!\n" +
+								   "Thanks for playing the Pig Game!!!\n");
 			} else { 
-				System.out.println("Too bad. COMPUTER WON.\n\nThanks for playing the Pig Game!!!");
+				System.out.println("Too bad. COMPUTER WON.\n\nThanks "+
+								   "for playing the Pig Game!!!\n");
 			}
-		} else {
+		} 
+		
+		// if user wants to see statistics
+		else {
 			findProbability();
 		}
 		
 	}
 	
 	/**	
-	 * Print the introduction to the game
+	 * This method prints the introduction to the game
 	 */
 	public void printIntroduction() {
 		System.out.println("\n");
@@ -107,18 +135,23 @@ public class PigGame {
 	}
 	
 	/** 
-	 * Method for simulating each turn
+	 * This method simulates each action (roll or hold) by prompting 
+	 * for user inputs, then acts accordingly, e.g. ending the turn and
+	 * resetting the turn total for a dice roll of 1, holding when user
+	 * chooses to or computer reaches 20+ points, or calling the next 
+	 * turn. 
+	 * The dice is rolled by calling methods from the Dice.java file
 	 */
 	public void turn() {
 		
-		/** if user is playing... */
+		// if it's the user's turn
 		if (player.equals("user")) {
 			System.out.println("Your turn score:\t" + userTurnScore);
 			System.out.println("Your total score:\t" + userTotalScore);
-			System.out.print("\n(r)oll or (h)old -> ");
-			String ch = scanner.next();
+			String ch = Prompt.getString("\n(r)oll or (h)old ");
 			
-			if (ch.equals("r")) { /** if user rolls */
+			// if the user decides to roll
+			if (ch.equals("r")) { 
 				System.out.println("\nYou ROLL");
 				
 				int numRolled = dice.roll();
@@ -126,58 +159,79 @@ public class PigGame {
 				
 				userTurnScore += numRolled;
 				
-				if (numRolled == LOSE_TURN_SCORE) { /** if user rolls a 1 */
+				// if the user rolls a 1 -> lose turn and turn score
+				if (numRolled == LOSE_TURN_SCORE) { 
 					System.out.println("You LOSE your turn.");
 					System.out.println("Your total score: " + userTotalScore + "\n");
 					player = "computer";
-					userTurnScore = 0;
 				} 
-				else turn(); /** user's turn again */
+				// otherwise: user's turn again
+				else turn(); 
 				
 			} 
 			
-			else { /** if user holds */
-				System.out.println("\nYour total score:\t" + userTotalScore);
+			// if the user decides to hold
+			else if (ch.equals("h")) { 
 				userTotalScore += userTurnScore;
+				System.out.println("\nYou HOLD");
+				System.out.println("Your total score: " + userTotalScore + "\n");
 				player = "computer";
-			}			
+			}
+			
+			// if the user doesn't type r or h
+			else {
+				System.out.println("Please type r or h");
+				turn();		
+			}
 		} 
 		
-		/** if computer is playing... */
+		// if it's the computer's turn
 		else {
 			System.out.println("Computer's turn score:\t" + compTurnScore);
 			System.out.println("Computer's total score:\t" + compTotalScore);
-			System.out.print("\nPress enter for computer's turn ->");
-			scanner.nextLine();
+			Prompt.getString("\nPress enter for computer's turn ");
 			
 			System.out.println("\nComputer will ROLL ");
 			int numRolled = dice.roll();
 			dice.printDice();
 			compTurnScore += numRolled;
 			
-			if (numRolled == 1) { /** if computer rolls a 1 */
+			// if the computer rolls a 1 -> lose turn and score
+			if (numRolled == LOSE_TURN_SCORE) { 
 				System.out.println("Computer loses turn.");
-				System.out.println("Computer total score: " + compTotalScore + "\n");
+				System.out.println("Computer's total score: " + compTotalScore + "\n");
 				player = "user";
-				compTurnScore = 0;
-			} /** if computer holds */
-			else if (compTurnScore >= TURN_END_SCORE) System.out.println("Computer will HOLD");
-			else turn(); /** computer's turn again */
+			} 
+			// if the computer holds (reached turn score of 20 or more)
+			else if (compTurnScore >= TURN_END_SCORE) {
+				System.out.println("Computer will HOLD");
+				compTotalScore += compTurnScore;
+				System.out.println("Computer's total score: " + compTotalScore + "\n");
+				player = "user";
+			}
+			// next turn
+			else turn(); 
 		}
 		
 	}	
 	
 	/**
-	 * Plays the statistical game
+	 * This method is used for finding the statistics. It simulates
+	 * the computer's turns, which is automatically holding at 20 or 
+	 * more or rolling a 1 (resulting in a score of 0), n times 
+	 * (depending on the user's input), and prints a resultant 
+	 * probability table in the terminal. 
 	 */
 	public void findProbability() {
+		final int MIN_TURNS = 1000, MAX_TURNS = 10000000;
 		System.out.println("Run statistical analysis - \"Hold at 20\"\n");
-		System.out.print("Number of turns (1000 - 10000000) -> ");
-		int turns = scanner.nextInt();
-		System.out.println("\nScore\tEstimated Probability");
+		int turns = Prompt.getInt("Number of turns", MIN_TURNS, MAX_TURNS);
+		System.out.print("\n\tEstimated\nScore\tProbability\n");
 
-		float [] distr = new float [DISTR_SIZE];
+		// array which holds # of occurences of each score
+		float [] distr = new float [DISTR_SIZE]; 
 			
+		// simulation
 		for (int i = 0; i < turns; i++) {
 			int total = 0;
 			int numRolled = 0;
@@ -189,10 +243,12 @@ public class PigGame {
 			distr[total] ++;
 		}
 		
+		// printing out the results
 		for (int i = 0; i < DISTR_SIZE; i++) distr[i] = distr[i]/turns;
-		System.out.printf("0\t%.4f\n",distr[0]);
+		System.out.printf(" 0\t%.5f\n",distr[0]);
 		for (int i = 20; i < DISTR_SIZE; i++) {
-			System.out.printf("%d\t%.4f\n", i, distr[i]);
+			System.out.printf("%d\t%.5f\n", i, distr[i]);
 		}
+		System.out.println();
 	}
 }
