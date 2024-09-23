@@ -20,7 +20,11 @@ public class MVCipher {
 	private	String	key;	// key used for encoding/decoding
 	private	String	inputLine = "";
 	private	final	int	MIN_KEY_LEN; // minimum key length needed for input
-	private	final	int	ENCRYPT_CHOICE; // number input for selecting encrypt	
+	private	final	int	ENCRYPT_CHOICE; // number input for selecting encrypt
+	private	String	inputFile;
+	private String	outputFile;
+	private	int		choice;
+	
 	
 		
 	/** Constructor */
@@ -44,15 +48,15 @@ public class MVCipher {
 		
 		// getting key's input
 		String key = "";
-		while (key.length() <= MIN_KEY_LEN) {
+		while (key.length() < MIN_KEY_LEN) {
 			key = Prompt.getString("Please input a word to use as key (letters only)");
-			if (key.length() <= MIN_KEY_LEN) {
+			if (key.length() < MIN_KEY_LEN) { // see if all letters
 				System.out.println("ERROR: Key must be all letters and at least 3 characters long");
 			}
 		} 
 		System.out.println();
 		
-		int choice = Prompt.getInt("Encrypt or decrypt? (1, 2)");
+		choice = Prompt.getInt("Encrypt or decrypt? (1, 2)");
 				
 		readAndWrite();
 		
@@ -60,14 +64,13 @@ public class MVCipher {
 	}
 	
 	public void readAndWrite() {
-		String inputFile, outputFile;
-		if (choice == ENCRYPT_CHOICE) inputFile = Prompt.nextString("Name of file to encrypt");
-		else inputFile = Prompt.nextString("Name of file to decrypt");
-		outputFile = Prompt.nextString("Name of output file");
+		if (choice == ENCRYPT_CHOICE) inputFile = Prompt.getString("Name of file to encrypt");
+		else inputFile = Prompt.getString("Name of file to decrypt");
+		outputFile = Prompt.getString("Name of output file");
 
 
 		Scanner input = FileUtils.openToRead(inputFile);
-		PrintWriter output = FileUtils.openToWrite(inputFile);
+		PrintWriter output = FileUtils.openToWrite(outputFile);
 		
 		while (input.hasNextLine()) {
 			inputLine = input.nextLine();
@@ -84,19 +87,24 @@ public class MVCipher {
 			int ind = (int)(ch);
 			if (ind >= 97 && ind <= 122) returnline += (char)(cryptLowerChar(ind, i));
 			else if (ind >= 65 && ind <= 90) returnline += (char)(cryptUpperChar(ind, i)); 
+			else returnline += " ";
 		}
 		return returnline;
 	}
 	
 	public int cryptLowerChar(int ind, int keyind) {
+		keyind = (int)((key.charAt(keyind % key.length())).toLowerCase()) - 65; // change to const
 		int newind = ind + keyind;
 		if (newind > 122) newind -= 26;
 		return (newind);
 	}
 	
 	public int cryptUpperChar(int ind, int keyind) {
+		keyind = (int)(key.charAt(keyind % key.length()));
 		int newind = ind + keyind;
 		if (newind > 90) newind -= 26;
 		return (newind);
 	}
 }
+
+// do decrypt
