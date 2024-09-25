@@ -85,22 +85,22 @@ public class MVCipher {
 		for (int i = 0; i < line.length(); i++) {
 			char ch = line.charAt(i);
 			int ind = (int)(ch);
-			if (ind >= 97 && ind <= 122) returnline += (char)(cryptLowerChar(ind, i));
-			else if (ind >= 65 && ind <= 90) returnline += (char)(cryptUpperChar(ind, i)); 
+			int cryptAmt = 0;
+			if (i > 0) cryptAmt = (int)(Character.toUpperCase(key.charAt(i % key.length()))) - 65; // change
+			if (ind >= 97 && ind <= 122) returnline += (char)(cryptLowerChar(ind, cryptAmt));
+			else if (ind >= 65 && ind <= 90) returnline += (char)(cryptUpperChar(ind, cryptAmt)); 
 			else returnline += " ";
 		}
 		return returnline;
 	}
 	
 	public int cryptLowerChar(int ind, int keyind) {
-		keyind = (int)((key.charAt(keyind % key.length())).toLowerCase()) - 65; // change to const
 		int newind = ind + keyind;
 		if (newind > 122) newind -= 26;
 		return (newind);
 	}
 	
 	public int cryptUpperChar(int ind, int keyind) {
-		keyind = (int)(key.charAt(keyind % key.length()));
 		int newind = ind + keyind;
 		if (newind > 90) newind -= 26;
 		return (newind);
