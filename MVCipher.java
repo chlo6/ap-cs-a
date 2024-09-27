@@ -2,17 +2,19 @@ import java.util.Scanner;
 import java.io.PrintWriter;
 
 /**
- *	MVCipher - Add your description here
+ *	MVCipher - encrypts and decrypts a txt file using a variation of the 
+ * 	Caesar cipher, which takes a keyword, turns it to uppercase, then 
+ * 	uses it as mutliple Caesar ciphers. Preserves case (upper/lower), 
+ * 	characters,spaces, etc, when being encrypted/decrypted.
+ * 
  *	Requires Prompt and FileUtils classes.
+ * 	To run - put in folder with Prompt.java and FileUtils.java
  *	
  *	@author	Chloe He	
  *	@since	September 23, 2024
  */
  
  // diff (cat Macbeth.txt) (cat notcrypted.txt)
- // add file utils
- //		System.out.println("\nThe encrypted file " + outputFile + "has been created using the keyword -> " + key.toUpperCase());
- 
  
  
 public class MVCipher {
@@ -24,7 +26,7 @@ public class MVCipher {
 	private	String	inputFile;
 	private String	outputFile;
 	private	int		choice;
-	
+	private int 	ind;
 	
 		
 	/** Constructor */
@@ -43,29 +45,49 @@ public class MVCipher {
 	 *	Method header goes here
 	 */
 	public void run() {
-		System.out.println("\n Welcome to the MV Cipher machine!\n");
+		System.out.println("\nWelcome to the MV Cipher machine!\n");
 		
 		
 		// getting key's input
-		String key = "";
-		while (key.length() < MIN_KEY_LEN) {
-			key = Prompt.getString("Please input a word to use as key (letters only)");
-			if (key.length() < MIN_KEY_LEN) { // see if all letters
-				System.out.println("ERROR: Key must be all letters and at least 3 characters long");
+		boolean foundKey = false;
+		while (!foundKey) {
+			key = Prompt.getString("Please input a word to use as key"
+								 + "(letters only)");
+			foundKey = true;
+			for (int i = 0; i < key.length(); i++) {
+				key = key.toUpperCase();
+				if(key.charAt(i) < 'A' || key.charAt(i) > 'Z') {
+					foundKey = false;
+				}
+			}
+			if (key.length() < MIN_KEY_LEN) foundKey = false;
+			if (!foundKey) { 
+				System.out.println("ERROR: Key must be all letters and"
+								 + " at least 3 characters long");
 			}
 		} 
+		
+		
+		ind = key.length()-1;
+
 		System.out.println();
 		
 		choice = Prompt.getInt("Encrypt or decrypt? (1, 2)");
 				
 		readAndWrite();
 		
-		System.out.println("\nThe encrypted file " + outputFile + "has been created using the keyword -> " + key.toUpperCase());
+		System.out.println("\nThe encrypted file " + outputFile + " has"
+						 + " been created using the keyword -> " + key);
+						 
+
 	}
 	
 	public void readAndWrite() {
-		if (choice == ENCRYPT_CHOICE) inputFile = Prompt.getString("Name of file to encrypt");
-		else inputFile = Prompt.getString("Name of file to decrypt");
+
+
+		if (choice == ENCRYPT_CHOICE) {
+			inputFile = Prompt.getString("Name of file to encrypt");
+		} else inputFile = Prompt.getString("Name of file to decrypt");
 		outputFile = Prompt.getString("Name of output file");
 
 
@@ -78,33 +100,39 @@ public class MVCipher {
 		}
 		
 		output.close();
+		
 	}
 	
 	public String cryptString(String line) {
+
 		String returnline = "";
 		for (int i = 0; i < line.length(); i++) {
 			char ch = line.charAt(i);
-			int ind = (int)(ch);
-			int cryptAmt = 0;
-			if (i > 0) cryptAmt = (int)(Character.toUpperCase(key.charAt(i % key.length()))) - 65; // change
-			if (ind >= 97 && ind <= 122) returnline += (char)(cryptLowerChar(ind, cryptAmt));
-			else if (ind >= 65 && ind <= 90) returnline += (char)(cryptUpperChar(ind, cryptAmt)); 
-			else returnline += " ";
+			System.out.println((int)key.charAt(ind%key.length()));
+			int cryptAmt = (int)key.charAt(ind%key.length()) - 64; 
+			
+			char newch = ch;
+			
+			if (ch != 32) {
+				if (choice == 1) {
+					newch += cryptAmt;
+					if (ch >= 'a' && ch <= 'z' && newch > 'z') newch -= 26;
+					if (ch >= 'A' && ch <= 'Z' && newch > 'Z') newch -= 26;
+				} else {
+					newch -= cryptAmt;
+					if (ch >= 'a' && ch <= 'z' && newch < 'a') newch += 26;
+					if (ch >= 'A' && ch <= 'Z' && newch < 'A') newch += 26;
+				}
+				ind++;
+			} else newch = ' ';
+			
+			//System.out.println(ch + " " + (int)(ch) + "\t" + (key.charAt(ind%key.length())) + " "+ cryptAmt + "\t" + newch + " " + (int)(newch));
+		
+			
+			returnline += newch;
 		}
+			
+			
 		return returnline;
 	}
-	
-	public int cryptLowerChar(int ind, int keyind) {
-		int newind = ind + keyind;
-		if (newind > 122) newind -= 26;
-		return (newind);
-	}
-	
-	public int cryptUpperChar(int ind, int keyind) {
-		int newind = ind + keyind;
-		if (newind > 90) newind -= 26;
-		return (newind);
-	}
 }
-
-// do decrypt
