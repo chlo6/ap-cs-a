@@ -8,6 +8,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JDialog;
 
+// checking if word is in arr doesnt work... when guessing
+
 /**
  *	Wordle.java
  *
@@ -93,7 +95,7 @@ public class Wordle
 	 *	The main method, to run the program.  The constructor is called, so that
 	 *	all of the fields are initialized.  The canvas is set up, and the GUI
 	 *	(the game of Wordle) runs.
-	 *	THIS METHOD IS INCOMPLETE.
+	 *	THIS METHOD IS INCOMPLETE. done now
 	 */
 	public static void main(String[] args)
 	{
@@ -151,7 +153,7 @@ public class Wordle
 	 *	@param testWord			if this String is found in words5allowed.txt, it
 	 *							will be used to set word.
 	 *	@return					the word chosen as the "goal word".
-	 *	THIS METHOD IS INCOMPLETE.
+	 *	THIS METHOD IS INCOMPLETE. done now :)
 	 */
 	public String openFileAndChooseWord(String inFileName, String testWord)
 	{
@@ -159,7 +161,7 @@ public class Wordle
 		
 		boolean useTestWord = false;
 		
-		int randInd = (int)(Math.random()*2309);// if infile = words5.txt
+		int randInd = (int)(Math.random()*2309);
 		
 		Scanner input = FileUtils.openToRead(inFileName);
 		
@@ -171,14 +173,12 @@ public class Wordle
 			randInd--;
 		}
 		
+		input.close();
 		
 		if (useTestWord) result = testWord;
-		 
 		
-		
-		// do testword, wordsallowed5
-		
-		if (show) System.out.println(result());
+		System.out.println(result);
+		if (show) System.out.println(result);
 		
 		return result;
 	}
@@ -193,6 +193,13 @@ public class Wordle
 	 */
 	public boolean inAllowedWordFile(String possibleWord)
 	{
+		Scanner input = FileUtils.openToRead("words5allowed.txt");
+		
+		while (input.hasNextLine()) {
+			String inputLine = input.nextLine();			
+			if (possibleWord.equals(inputLine)) return true;
+		}
+		input.close();
 		
 		return false;
 	}
@@ -208,6 +215,15 @@ public class Wordle
 	 */
 	public void processGuess ( )
 	{
+		letters = letters.toLowerCase();
+		if (!inAllowedWordFile(letters)) {
+			JOptionPane pane = new JOptionPane(letters + " is not in the word list.");
+			JDialog d = pane.createDialog(null, "INVALID INPUT");
+			d.setLocation(365,250);
+			d.setVisible(true);
+			return;
+		}
+		
 		letters = letters.toUpperCase();
 		
 		// if guess is in words5allowed.txt then put into guess list
