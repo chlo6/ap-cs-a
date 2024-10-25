@@ -24,7 +24,8 @@ public class DiceGroup {
 			die[i] = new Dice();
 			die[i].roll();
 		}
-		printDice();
+		
+		this.printDice();
 		
 		return 1;
 	}
@@ -49,10 +50,12 @@ public class DiceGroup {
 			if (!hold[i]) {
 				die[i] = new Dice();
 				die[i].roll();
+				
 			}
 		}
 		
-		printDice();
+		this.printDice();				
+
 	}
 	
 	/**	getters - you complete */
@@ -69,6 +72,7 @@ public class DiceGroup {
 	 *  Prints out the images of the dice
 	 */
 	public void printDice() {
+
 		printDiceHeaders();
 		for (int i = 0; i < 6; i++) {
 			System.out.print(" ");

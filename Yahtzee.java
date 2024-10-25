@@ -6,6 +6,12 @@ public class Yahtzee
 {
 	private String name1, name2;
 	private int curPlayer;
+	private DiceGroup dice1, dice2;
+	
+	public Yahtzee() {
+		dice1 = new DiceGroup();
+		dice2 = new DiceGroup();
+	}
 	
 	public static void main (String args[]) {
 		Yahtzee yt = new Yahtzee();
@@ -16,8 +22,9 @@ public class Yahtzee
 		printHeader();
 		
 		// get names
-		name1 = Prompt("Player 1, please enter your first name");
-		name2 = Prompt("Player 2, please enter your first name");
+		name1 = Prompt.getString("Player 1, please enter your first name");
+		name2 = Prompt.getString("Player 2, please enter your first name");
+		System.out.println();
 		
 		curPlayer = getPlayerOne();
 		
@@ -45,10 +52,15 @@ public class Yahtzee
 		System.out.println("|                                                                                    |");
 		System.out.println("| LET'S PLAY SOME YAHTZEE!                                                           |");
 		System.out.println("+------------------------------------------------------------------------------------+");
-		System.out.println("\n\n");
+		System.out.println("\n");
 	}
 	
-	public void getPlayerOne() {
-		Prompt = ("Let's see who will go first. Aaron, please hit enter to roll the dice"); // chagne name
+	public int getPlayerOne() {
+		String trash = Prompt.getString("Let's see who will go first. " + name1 + ", please hit enter to roll the dice"); 
+		dice1.rollDice();
+		trash = Prompt.getString(name2 + ", it's your turn. Please hit enter to roll the dice");
+		dice2.rollDice();
+		
+		return 1;
 	}
 }
