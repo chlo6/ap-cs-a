@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;		// for testing purposes
+import java.util.Scanner;		
 
 /**
  *	SortMethods - Sorts an ArrayList of Strings in ascending order.
@@ -8,8 +8,8 @@ import java.util.Scanner;		// for testing purposes
  *	Requires FileUtils class to compile.
  *	Requires file randomWords.txt to execute a test run.
  *
- *	@author	
- *	@since	
+ *	@author	Chloe He
+ *	@since	January 10th, 2025
  */
 public class SortMethods {
 	
@@ -27,20 +27,27 @@ public class SortMethods {
 	 *	@param first	first index of arr to sort
 	 *	@param last		last index of arr to sort
 	 */
-	public void mergeSortRecurse(List<String> arr, int first, int last) {
-		if (first == last) return;
+	public void mergeSortRecurse(List<String> arr, int l, int r) {
+		if (l == r) return;
 		
-		if (last - first == 1) {
-			if (arr.get(first).compareTo(arr.get(last)) > 0) swap(arr, first, last);
+		if (right - l == 1) {
+			if (arr.get(l).compareTo(arr.get(r)) > 0) swap(arr, l, r);
 			return;
 		}
 		
-		int mid = (first + last)/2;
-		mergeSortRecurse(arr, first, mid);
-		mergeSortRecurse(arr, mid + 1, last);
-		merge(arr, first, mid, last);
+		int m = (l + r)/2;
+		mergeSortRecurse(arr, l, m);
+		mergeSortRecurse(arr, m + 1, r);
+		merge(arr, l, m, r);
 	}
 
+	/**
+ 	*	swaps value @ index a with value @ index b in a list of strings
+  	*	@param ls 	List of strings that you want to be swapped
+   	*	@param a 	index #1 u want to swap
+   	*	@param b 	index #2 u want to swap
+	*/
+	
 	public void swap(List<String> ls, int a, int b) {
 		String c = ls.get(a);
 		ls.set(a, ls.get(b));
@@ -55,33 +62,33 @@ public class SortMethods {
 	 *					mid + 1 is first index of second list
 	 *	@param last		last index of second list
 	 */
-	public void merge(List<String> arr, int first, int mid, int last) {
+	public void merge(List<String> arr, int l1, int m, int r1) {
 		// Insert your code here
-		int left = first;
-		int right = mid + 1;
+		int l = l1;
+		int r = m + 1;
 		List <String> newArr = new ArrayList<String>();
 		
-		while (left <= mid && right <= last) {
-			if (arr.get(left).compareTo(arr.get(right)) < 0) {
-				newArr.add(arr.get(left));
-				left++;
+		while (l <= m && r <= r1) {
+			if (arr.get(l).compareTo(arr.get(r)) < 0) {
+				newArr.add(arr.get(l));
+				l++;
 			} else {
-				newArr.add(arr.get(right));
-				right++;
+				newArr.add(arr.get(r));
+				r++;
 			}
 		}
 		
-		while (left <= mid) {
-			newArr.add(arr.get(left));
-			left++;
+		while (l <= m) {
+			newArr.add(arr.get(l));
+			l++;
 		}
-		while (right <= last) {
-			newArr.add(arr.get(right));
-			right++;
+		while (r <= r1) {
+			newArr.add(arr.get(r));
+			r++;
 		}
 		
 		for (int a = 0; a < newArr.size(); a++) {
-			arr.set(first + a, newArr.get(a));
+			arr.set(l1 + a, newArr.get(a));
 		}
 	}
 
