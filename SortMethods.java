@@ -30,7 +30,7 @@ public class SortMethods {
 	public void mergeSortRecurse(List<String> arr, int l, int r) {
 		if (l == r) return;
 		
-		if (right - l == 1) {
+		if (r - l == 1) {
 			if (arr.get(l).compareTo(arr.get(r)) > 0) swap(arr, l, r);
 			return;
 		}
