@@ -13,8 +13,8 @@ import java.util.Scanner;
  *
  *	Requires FileUtils class
  *
- *	@author	
- *	@since	
+ *	@author	Chloe He
+ *	@since	Jan 10, 2025
  */
 public class WordFinder {
 		
@@ -82,20 +82,20 @@ public class WordFinder {
 		if (low > high) return -1;
 		
 		// compute middle index
-		int mid = (low + high)/2;
+		int m = (low + high)/2;
 		
 		// compare the target to the mid index
-		int compare = target.compareTo(listOfWords.get(mid));
+		int compare = target.compareTo(listOfWords.get(m));
 		
 		// if target is equal to mid then return the index of the matching word
-		if (compare == 0) return mid;
+		if (compare == 0) return m;
 		
 		// if target is less than mid, then check bottom of list recursively
 		if (compare < 0) 
-			return binarySearchRecurse(listOfWords, target, low, mid-1);
+			return binarySearchRecurse(listOfWords, target, low, m-1);
 			
 		// otherwise, target is greater than mid so check top of list recursively
-		return binarySearchRecurse(listOfWords, target, mid+1, high);
+		return binarySearchRecurse(listOfWords, target, m+1, high);
 		
 	}
 	
@@ -110,13 +110,13 @@ public class WordFinder {
 	public int binarySearchIterative(List<String> listOfWords, String target) {
 		// Insert your code here
 		
-		int left = 0, right = listOfWords.size();
-		while (left <= right) {
-			int mid = (left + right)/2;
-			int compare = target.compareTo(listOfWords.get(mid));
-			if (compare == 0) return mid;
-			else if (compare < 0) right = mid - 1;
-			else left = mid + 1;
+		int l = 0, r = listOfWords.size();
+		while (l <= r) {
+			int m = (l + r)/2;
+			int compare = target.compareTo(listOfWords.get(m));
+			if (compare == 0) return m;
+			else if (compare < 0) r = m - 1;
+			else l = m + 1;
 		} 
 		return -1;
 	}
