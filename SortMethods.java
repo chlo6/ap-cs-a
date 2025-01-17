@@ -24,8 +24,8 @@ public class SortMethods {
 	/**
 	 *	Recursive mergeSort method.
 	 *	@param arr		List of String objects to sort
-	 *	@param first	first index of arr to sort
-	 *	@param last		last index of arr to sort
+	 *	@param l		left index - start of sort
+	 *	@param r		right index - end of sort
 	 */
 	public void mergeSortRecurse(List<String> arr, int l, int r) {
 		if (l == r) return;
@@ -63,7 +63,6 @@ public class SortMethods {
 	 *	@param last		last index of second list
 	 */
 	public void merge(List<String> arr, int l1, int m, int r1) {
-		// Insert your code here
 		int l = l1;
 		int r = m + 1;
 		List <String> newArr = new ArrayList<String>();

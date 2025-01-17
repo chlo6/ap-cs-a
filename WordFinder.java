@@ -59,10 +59,10 @@ public class WordFinder {
 		if (listOfWords.size() == 0) return -1;
 		
 		// otherwise, recursively perform binary search to find target word
-		return binarySearchRecurse(listOfWords, target, 0, listOfWords.size() - 1);
+		//return binarySearchRecurse(listOfWords, target, 0, listOfWords.size() - 1);
 		
 		// otherwise, iteratively perform binary search to find target word
-		//return binarySearchIterative(listOfWords, target);
+		return binarySearchIterative(listOfWords, target);
 	}
 	
 	/**
